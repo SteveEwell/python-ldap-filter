@@ -216,28 +216,28 @@ class Attribute:
         return Filter(self.name, '=', '*')
 
     def raw(self, value):
-        return Filter(self.name, '=', value)
+        return Filter(self.name, '=', _to_string(value))
 
     def equal_to(self, value):
-        return Filter(self.name, '=', self.escape(value))
+        return Filter(self.name, '=', self.escape(_to_string(value)))
 
     def starts_with(self, value):
-        return Filter(self.name, '=', self.escape(value) + '*')
+        return Filter(self.name, '=', self.escape(_to_string(value)) + '*')
 
     def ends_with(self, value):
-        return Filter(self.name, '=', '*' + self.escape(value))
+        return Filter(self.name, '=', '*' + self.escape(_to_string(value)))
 
     def contains(self, value):
-        return Filter(self.name, '=', '*' + self.escape(value) + '*')
+        return Filter(self.name, '=', '*' + self.escape(_to_string(value)) + '*')
 
     def approx(self, value):
-        return Filter(self.name, '~=', self.escape(value))
+        return Filter(self.name, '~=', self.escape(_to_string(value)))
 
-    def lte(self, value):
-        return Filter(self.name, '<=', self.escape(value))
+    def lesser_than(self, value):
+        return Filter(self.name, '<=', self.escape(_to_string(value)))
 
-    def gte(self, value):
-        return Filter(self.name, '>=', self.escape(value))
+    def greater_than(self, value):
+        return Filter(self.name, '>=', self.escape(_to_string(value)))
 
     @staticmethod
     def escape(data):
@@ -300,3 +300,12 @@ def _not_helper(filt, data):
 
 def _g_to_string_helper(item, indent, level, id_char):
     return item.to_string(indent, level, id_char)
+
+
+def _to_string(val):
+    try:
+        val = str(val)
+    except ValueError:
+        print('Could not convert data to a string.')
+        raise
+    return val
