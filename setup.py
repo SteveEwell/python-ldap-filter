@@ -34,7 +34,7 @@ rootdir = os.path.dirname(__file__) or "."
 
 setup(
     name='ldap-filter',
-    version='0.1.0',
+    version='0.1.1',
     description='A Python utility library for working with Lightweight Directory Access Protocol (LDAP) filters.',
     long_description=__doc__,
     url='https://github.com/SteveEwell/python-ldap-filter',
@@ -51,8 +51,8 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
-    keywords='costco fiscal date development',
-    packages=['cw_fiscal'],
+    keywords='ldap filter rfc4515 utility development',
+    packages=['ldap_filter'],
     install_requires=[],
     extras_require={
         'test': [
