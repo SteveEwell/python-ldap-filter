@@ -1,5 +1,7 @@
 import re
 
+import ldap_filter.parser as parser
+
 
 class LDAPBase:
     indent = 4
@@ -32,6 +34,10 @@ class LDAPBase:
                 return ''
 
         return id_char * (level * indent)
+
+    @staticmethod
+    def parse(filt):
+        return parser.parse(filt, actions=ParserActions())
 
     @staticmethod
     def escape(data):
@@ -309,3 +315,143 @@ def _to_string(val):
         print('Could not convert data to a string.')
         raise
     return val
+
+
+class ParserActions:
+
+    @staticmethod
+    def elements_to_string(elements=None):
+        if elements:
+            string = ''
+
+            for e in elements:
+                try:
+                    string += e.text if e else ''
+                except AttributeError:
+                    string += str(e) if e else ''
+            return string
+
+    def return_string(self, input, start, end, elements=None):
+        return self.elements_to_string(elements)
+
+    def return_hex(self, input, start, end, elements=None):
+        string = self.elements_to_string(elements)
+
+        if string:
+            return int(string, 16)
+
+    def return_escaped_char(self, input, start, end, elements=None):
+        string = self.elements_to_string(elements)
+
+        if string:
+            chr_code = int(string.replace('\\', ''))
+
+            return chr(chr_code)
+
+    def return_options(self, input, start, end, attr, elements=None, opts=None):
+        if opts:
+            opts.pop(0)
+            opts = opts.pop(0)
+            opts = opts.split(';')
+
+        attr[0]['options'] = opts if opts else []
+        return attr[0]
+
+    def return_oid_type(self, input, start, end, elements=None):
+        oid = self.elements_to_string(elements)
+
+        if oid:
+            return {
+                'type': 'oid',
+                'attribute': oid
+            }
+
+    def return_attr_type(self, input, start, end, elements=None):
+        name = self.elements_to_string(elements)
+
+        if name:
+            return {
+                'type': 'attribute',
+                'attribute': name
+            }
+
+    def return_simple_filter(self, input, start, end, elements=None):
+        attr = elements[0]['attribute']
+        comp = getattr(elements[1], 'text')
+        value = elements[2]
+
+        return Filter(attr, comp, value)
+
+    def return_present_filter(self, input, start, end, elements=None):
+        attr = elements[0]['attribute']
+
+        return Filter.attribute(attr).present()
+
+    def return_wildcard(self, input, start, end, elements=None):
+        attr = elements[0]['attribute']
+        value = getattr(elements[2], 'text')
+
+        return Filter(attr, '=', value)
+
+    def return_filter(self, input, start, end, filt=None, elements=None):
+        for f in filt:
+            if isinstance(f, (Filter, GroupAnd, GroupOr, GroupNot)):
+                return f
+
+    def return_and_filter(self, input, start, end, filters=None, elements=None):
+        for f in filters:
+            if f.elements:
+                return Filter.AND(f.elements)
+
+    def return_or_filter(self, input, start, end, filters=None, elements=None):
+        for f in filters:
+            if f.elements:
+                return Filter.OR(f.elements)
+
+    def return_not_filter(self, input, start, end, filt=None, elements=None):
+        for f in filt:
+            if isinstance(f, Filter):
+                return Filter.NOT(f)
+
+    def log(self, input, start, end, elements):
+        print('Begin logging')
+        print(' input: ', input)
+        print(' start: ', start)
+        print(' end: ', end)
+        if elements:
+            for node in elements:
+                if node:
+                    print(' element: ', node)
+
+
+class ParserExtensions:
+    class ReturnFilter:
+        filter = None
+
+        def process(self):
+            return self.filter
+
+    class StripWhiteSpace:
+        filter = None
+
+        def process(self):
+            self.filter.text = re.sub('/ +$/', '', self.filter.text)
+            return self.filter
+
+    class ReturnANDFilter:
+        filters = None
+
+        def process(self):
+            return Filter.AND(self.filters)
+
+    class ReturnORFilter:
+        filters = None
+
+        def process(self):
+            return Filter.OR(self.filters)
+
+    class ReturnNOTFilter:
+        filter = None
+
+        def process(self):
+            return Filter.NOT(self.filter)

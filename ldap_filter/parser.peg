@@ -1,0 +1,43 @@
+grammar LDAP
+
+    # Main Parser
+
+    root <- filter / FILL* item
+    filter <- FILL* '(' filt:filtercomp ')' FILL* %return_filter
+    filtercomp <- and / or / not / item
+    and <- '&' FILL* filters:filterlist FILL* %return_and_filter
+    or <- '|' FILL* filters:filterlist FILL* %return_or_filter
+    not <- '!' FILL* filt:filter FILL* %return_not_filter
+    filterlist <- filter+
+    item <- wildcard / simple
+    simple <- attr filtertype value %return_simple_filter
+    filtertype <- equal / approx / greater / less
+    equal <- '='
+    approx <- '~='
+    greater <- '>='
+    less <- '<='
+    wildcard <- attr equal wildcard_value %return_wildcard
+    wildcard_value <- value? any value?
+    any <- '*' (value '*')* %return_string
+    attr <- AttributeDescription
+    value <- AttributeValue+ %return_string
+
+    # Base Types
+    AttributeDescription <- attr:AttributeType opts:(";" options)? %return_options
+    AttributeOptions <- ";" options
+    AttributeType <- LDAP_OID / AttrTypeName
+    AttrTypeName <- (ALPHA AttrTypeChars*) %return_attr_type
+    AttrTypeChars <- ALPHA / DIGIT / "-"
+    LDAP_OID <- (DIGIT+ ("." DIGIT+)*) %return_oid_type
+    options <- (option ";" options) %return_string / option
+    option <- (AttrTypeChars+) %return_string
+    AttributeValue <- EscapedCharacter / [^!*\x29]
+    EscapedCharacter <- '\\' ASCII_VALUE %return_escaped_char
+    ASCII_VALUE <- HEX_CHAR HEX_CHAR %return_hex
+    HEX_CHAR <- [a-fA-F0-9]
+    FILL <- SPACE / TAB / SEP
+    SPACE <- [\x20]
+    TAB <- [\x09]
+    DIGIT <- [0-9]
+    ALPHA <- [a-zA-Z]
+    SEP <- "\r\n" / "\n"
