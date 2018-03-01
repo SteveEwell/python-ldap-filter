@@ -77,3 +77,28 @@ class TestFilterEscapes:
         filt = Filter.attribute('number').equal_to(-10)
         string = filt.to_string()
         assert string == '(number=-10)'
+
+
+class TestFilterAggregates:
+    def test_and_aggregate(self):
+        filt = Filter.AND([
+            Filter.attribute('givenName').equal_to('bilbo'),
+            Filter.attribute('sn').equal_to('baggens')
+        ])
+        string = filt.to_string()
+        assert string == '(&(givenName=bilbo)(sn=baggens))'
+
+    def test_or_aggregate(self):
+        filt = Filter.OR([
+            Filter.attribute('givenName').equal_to('bilbo'),
+            Filter.attribute('sn').equal_to('baggens')
+        ])
+        string = filt.to_string()
+        assert string == '(|(givenName=bilbo)(sn=baggens))'
+
+    def test_not_aggregate(self):
+        filt = Filter.NOT([
+            Filter.attribute('givenName').equal_to('bilbo')
+        ])
+        string = filt.to_string()
+        assert string == '(!(givenName=bilbo))'

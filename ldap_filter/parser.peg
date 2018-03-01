@@ -1,9 +1,9 @@
+# PEG file for Canopy (http://canopy.jcoglan.com/)
+
 grammar LDAP
-
-    # Main Parser
-
-    root <- filter / FILL* item
+    root <- filter / filter_item
     filter <- FILL* '(' filt:filtercomp ')' FILL* %return_filter
+    filter_item <- FILL* filt:item %return_filter
     filtercomp <- and / or / not / item
     and <- '&' FILL* filters:filterlist FILL* %return_and_filter
     or <- '|' FILL* filters:filterlist FILL* %return_or_filter
@@ -21,8 +21,6 @@ grammar LDAP
     any <- '*' (value '*')* %return_string
     attr <- AttributeDescription
     value <- AttributeValue+ %return_string
-
-    # Base Types
     AttributeDescription <- attr:AttributeType opts:(";" options)? %return_options
     AttributeOptions <- ";" options
     AttributeType <- LDAP_OID / AttrTypeName

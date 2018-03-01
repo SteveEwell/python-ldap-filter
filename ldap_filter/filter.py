@@ -1,5 +1,4 @@
 import re
-
 import ldap_filter.parser as parser
 
 
@@ -37,6 +36,7 @@ class LDAPBase:
 
     @staticmethod
     def parse(filt):
+        filt = _strip_whitespace(filt)
         return parser.parse(filt, actions=ParserActions())
 
     @staticmethod
@@ -200,7 +200,7 @@ class GroupAnd(Group):
         super().__init__(comp='&', filters=filters)
 
     def match(self, data):
-        return any(f.match(data) for f in self.filters)
+        return all(f.match(data) for f in self.filters)
 
 
 class GroupNot(Group):
@@ -278,6 +278,29 @@ def _ss_regex_escaped(match):
     return s
 
 
+def _strip_whitespace(filt):
+    if ' ' or '\n' or '\r\n' in filt:
+        att_val = re.findall(r'(?<=[=])(?<=[~=]|[>=]|[<=])(.*?)(?=\))', filt)
+        filt = filt.replace('\r\n', '')
+        filt = filt.replace('\n', '')
+        filt = filt.replace(' ', '')
+
+        for s in att_val:
+            key = s.replace('\r\n', '')
+            key = key.replace('\n', '')
+            key = key.replace(' ', '')
+            filt = filt.replace(key, s)
+
+        att = re.findall(r'(?<=[(])[a-zA-Z0-9 -.]*?(?=[~=]|[>=]|[<=]|[=])', filt)
+
+        for s in att:
+            if ' ' in s:
+                regex = re.compile('(?<=[(])' + s + '?(?=[~=]|[>=]|[<=]|[=])', re.I)
+                filt = re.sub(regex, s.replace(' ', ''), filt)
+
+    return filt
+
+
 def _ss_helper(cv, filt):
     regex = _ss_regex(filt)
 
@@ -348,7 +371,8 @@ class ParserActions:
 
             return chr(chr_code)
 
-    def return_options(self, input, start, end, attr, elements=None, opts=None):
+    @staticmethod
+    def return_options(input, start, end, attr, opts=None, elements=None):
         if opts:
             opts.pop(0)
             opts = opts.pop(0)
@@ -375,83 +399,47 @@ class ParserActions:
                 'attribute': name
             }
 
-    def return_simple_filter(self, input, start, end, elements=None):
+    @staticmethod
+    def return_simple_filter(input, start, end, elements=None):
         attr = elements[0]['attribute']
         comp = getattr(elements[1], 'text')
         value = elements[2]
 
         return Filter(attr, comp, value)
 
-    def return_present_filter(self, input, start, end, elements=None):
+    @staticmethod
+    def return_present_filter(input, start, end, elements=None):
         attr = elements[0]['attribute']
 
         return Filter.attribute(attr).present()
 
-    def return_wildcard(self, input, start, end, elements=None):
+    @staticmethod
+    def return_wildcard(input, start, end, elements=None):
         attr = elements[0]['attribute']
         value = getattr(elements[2], 'text')
 
         return Filter(attr, '=', value)
 
-    def return_filter(self, input, start, end, filt=None, elements=None):
+    @staticmethod
+    def return_filter(input, start, end, filt=None, elements=None):
         for f in filt:
             if isinstance(f, (Filter, GroupAnd, GroupOr, GroupNot)):
                 return f
 
-    def return_and_filter(self, input, start, end, filters=None, elements=None):
+    @staticmethod
+    def return_and_filter(input, start, end, filters=None, elements=None):
         for f in filters:
             if f.elements:
                 return Filter.AND(f.elements)
 
-    def return_or_filter(self, input, start, end, filters=None, elements=None):
+    @staticmethod
+    def return_or_filter(input, start, end, filters=None, elements=None):
         for f in filters:
             if f.elements:
                 return Filter.OR(f.elements)
 
-    def return_not_filter(self, input, start, end, filt=None, elements=None):
+    @staticmethod
+    def return_not_filter(input, start, end, filt=None, elements=None):
         for f in filt:
             if isinstance(f, Filter):
                 return Filter.NOT(f)
-
-    def log(self, input, start, end, elements):
-        print('Begin logging')
-        print(' input: ', input)
-        print(' start: ', start)
-        print(' end: ', end)
-        if elements:
-            for node in elements:
-                if node:
-                    print(' element: ', node)
-
-
-class ParserExtensions:
-    class ReturnFilter:
-        filter = None
-
-        def process(self):
-            return self.filter
-
-    class StripWhiteSpace:
-        filter = None
-
-        def process(self):
-            self.filter.text = re.sub('/ +$/', '', self.filter.text)
-            return self.filter
-
-    class ReturnANDFilter:
-        filters = None
-
-        def process(self):
-            return Filter.AND(self.filters)
-
-    class ReturnORFilter:
-        filters = None
-
-        def process(self):
-            return Filter.OR(self.filters)
-
-    class ReturnNOTFilter:
-        filter = None
-
-        def process(self):
-            return Filter.NOT(self.filter)
