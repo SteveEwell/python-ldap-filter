@@ -34,12 +34,12 @@ class TestFilterAttributes:
         assert string == '(attr~=value)'
 
     def test_greater_than(self):
-        filt = Filter.attribute('attr').greater_than('value')
+        filt = Filter.attribute('attr').gte('value')
         string = filt.to_string()
         assert string == '(attr>=value)'
 
     def test_lesser_than(self):
-        filt = Filter.attribute('attr').lesser_than('value')
+        filt = Filter.attribute('attr').lte('value')
         string = filt.to_string()
         assert string == '(attr<=value)'
 

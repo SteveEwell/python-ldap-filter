@@ -1,6 +1,8 @@
 import re
 import ldap_filter.parser as parser
 
+from ldap_filter.soundex import soundex_compare
+
 
 class LDAPBase:
     indent = 4
@@ -74,8 +76,10 @@ class LDAPBase:
         return any(_ss_helper(m, filt) for m in match)
 
     @staticmethod
-    def match_approx(data, filt):  # TODO: Implement LDAPBase.match_approx()
-        pass
+    def match_approx(data, filt):
+        match = _as_list(data)
+
+        return any(_approx_helper(m, filt) for m in match)
 
     @staticmethod
     def match_lte(data, filt):
@@ -239,10 +243,10 @@ class Attribute:
     def approx(self, value):
         return Filter(self.name, '~=', self.escape(_to_string(value)))
 
-    def lesser_than(self, value):
+    def lte(self, value):
         return Filter(self.name, '<=', self.escape(_to_string(value)))
 
-    def greater_than(self, value):
+    def gte(self, value):
         return Filter(self.name, '>=', self.escape(_to_string(value)))
 
     @staticmethod
@@ -312,12 +316,24 @@ def _ms_helper(cv, filt):
         return cv.lower() == Filter.unescape(filt).lower()
 
 
+def _approx_helper(cv, filt):
+    return soundex_compare(cv, filt)
+
+
 def _lte_helper(cv, filt):
-    return cv <= filt
+    try:
+        val = int(cv) <= int(filt)
+    except ValueError:
+        val = str(cv) <= str(filt)
+    return val
 
 
 def _gte_helper(cv, filt):
-    return cv >= filt
+    try:
+        val = int(cv) >= int(filt)
+    except ValueError:
+        val = str(cv) >= str(filt)
+    return val
 
 
 def _not_helper(filt, data):
