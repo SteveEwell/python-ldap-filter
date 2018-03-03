@@ -83,3 +83,53 @@ class TestFilterMatch:
         assert filt.match({'name': 'Ashcroft'})
         assert filt.match({'name': 'Ashcraft'})
         assert not filt.match({'name': 'Ashsoft'})
+
+    def test_and_aggregate(self):
+        filt = Filter.AND([
+            Filter.attribute('firstName').equal_to('Alice'),
+            Filter.attribute('lastName').ends_with('Chains')
+        ])
+        assert filt.match({'firstName': 'Alice', 'lastName': 'Chains'})
+        assert filt.match({'firstName': 'Alice', 'lastName': 'In-Chains'})
+        assert not filt.match({'firstName': 'Bob', 'lastName': 'Chains'})
+        assert not filt.match({'firstName': 'Alice'})
+
+    def test_or_aggregate(self):
+        filt = Filter.OR([
+            Filter.attribute('firstName').equal_to('Alice'),
+            Filter.attribute('lastName').ends_with('Chains')
+        ])
+        assert filt.match({'firstName': 'Alice', 'lastName': 'Chains'})
+        assert filt.match({'firstName': 'Alice', 'lastName': 'In-Chains'})
+        assert filt.match({'firstName': 'Bob', 'lastName': 'Chains'})
+        assert filt.match({'firstName': 'Alice'})
+        assert not filt.match({'firstName': 'Bob', 'lastName': 'Smith'})
+        assert not filt.match({'firstName': 'Bob'})
+        assert not filt.match({})
+
+    def test_not_aggregate(self):
+        filt = Filter.NOT([
+            Filter.attribute('firstName').equal_to('Alice')
+        ])
+        assert filt.match({'firstName': 'Bob'})
+        assert filt.match({})
+        assert not filt.match({'firstName': 'Alice'})
+        assert not filt.match({'firstName': 'Alice', 'lastName': 'Chains'})
+
+    def test_escaped(self):
+        filt = Filter.attribute('escaped').equal_to('*(test)*')
+        assert filt.match({'escaped': '*(test)*'})
+        assert not filt.match({'escaped': '(test)'})
+        assert not filt.match({})
+
+    def test_match_substrings(self):
+        filt = Filter.attribute('sub').raw('*jer* jo*e*')
+        assert filt.match({'sub': 'Jerry Jones'})
+
+    def test_match_escaped(self):
+        filt = Filter.attribute('sub').raw('jerry\\2a \\28jones\\29 \\5c')
+        assert filt.match({'sub': 'Jerry* (Jones) \\'})
+
+    def test_match_escaped_substrings(self):
+        filt = Filter.attribute('sub').raw('*jerry\\5c \\2a j*s*')
+        assert filt.match({'sub': 'Jerry\\ * Jones'})

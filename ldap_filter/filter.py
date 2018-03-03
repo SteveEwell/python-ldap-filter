@@ -1,4 +1,5 @@
 import re
+import platform
 import ldap_filter.parser as parser
 
 from ldap_filter.soundex import soundex_compare
@@ -25,7 +26,7 @@ class LDAPBase:
         raise NotImplementedError
 
     @staticmethod
-    def _indent(indent, level=0, id_char=' '):
+    def _indent(indent, level=0, indt_char=' '):
         if type(indent) == bool and indent:
             indent = LDAPBase.indent
         else:
@@ -34,7 +35,13 @@ class LDAPBase:
             except ValueError:
                 return ''
 
-        return id_char * (level * indent)
+        try:
+            indt_char = str(indt_char)
+            print(indt_char)
+        except ValueError:
+            raise InvalidIndentChar('Indent value must convertible to a string')
+
+        return indt_char * (level * indent)
 
     @staticmethod
     def parse(filt):
@@ -120,6 +127,15 @@ class Filter(LDAPBase):
     def __repr__(self):
         return 'Filter: %s' % self.to_string()
 
+    def __str__(self):
+        return self.to_string()
+
+    def __add__(self, other):
+        return str(self) + other
+
+    def __radd__(self, other):
+        return other + str(self)
+
     def match(self, data):
         value = self.val
 
@@ -142,9 +158,9 @@ class Filter(LDAPBase):
         else:
             pass
 
-    def to_string(self, indent=False, level=0, id_char=' '):
+    def to_string(self, indent=False, level=0, indt_char=' '):
         return ''.join([
-            self._indent(indent, level, id_char),
+            self._indent(indent, level, indt_char),
             '(',
             self.attr,
             self.comp,
@@ -166,13 +182,29 @@ class Group(LDAPBase):
     def __repr__(self):
         return 'Filter: %s' % self.to_string()
 
+    def __str__(self):
+        return self.to_string()
+
+    def __add__(self, other):
+        return str(self) + other
+
+    def __radd__(self, other):
+        return other + str(self)
+
     def match(self, data):
         raise NotImplementedError
 
-    def to_string(self, indent=False, level=0, id_char=' '):
-        id_str = self._indent(indent, level, id_char)
+    def to_string(self, indent=False, level=0, indt_char=' '):
+        id_str = self._indent(indent, level, indt_char)
         id_str2 = id_str
-        nl = '\n' if indent else ''
+        nl = ''
+
+        # If running on Windows use Windows style newlines,
+        # if anything else default to POSIX style.
+        if platform.system() == 'Windows' and indent:
+            nl = '\r\n'
+        elif indent:
+            nl = '\n'
 
         if not Filter.collapsed and self.comp == '!':
             nl = ''
@@ -184,7 +216,7 @@ class Group(LDAPBase):
             '(',
             self.comp,
             nl,
-            nl.join(list(map(lambda x: x.to_string(indent, level + 1, id_char), self.filters))),
+            nl.join(list(map(lambda x: x.to_string(indent, level + 1, indt_char), self.filters))),
             nl,
             id_str2,
             ')'
@@ -277,7 +309,7 @@ def _ss_regex_escaped(match):
     s = match.group(0) if match else None
 
     if s in ['28', '29', '5c', '2a']:
-        s = '\\x{}'.format(match.group(0).upper())
+        s = 'x{}'.format(match.group(0).upper())
 
     return s
 
@@ -343,8 +375,8 @@ def _not_helper(filt, data):
         pass
 
 
-def _g_to_string_helper(item, indent, level, id_char):
-    return item.to_string(indent, level, id_char)
+def _g_to_string_helper(item, indent, level, indt_char):
+    return item.to_string(indent, level, indt_char)
 
 
 def _to_string(val):
@@ -459,3 +491,7 @@ class ParserActions:
         for f in filt:
             if isinstance(f, Filter):
                 return Filter.NOT(f)
+
+
+class InvalidIndentChar(Exception):
+    pass
