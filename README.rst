@@ -3,6 +3,23 @@ python-ldap-filter
 
 **Build and generate LDAP filters**
 
+.. image:: https://img.shields.io/pypi/v/ldap-filter.svg
+    :target: https://pypi.python.org/pypi/ldap-filter/
+    :alt: Latest Version
+
+.. image:: https://img.shields.io/pypi/l/ldap-filter.svg
+    :target: https://pypi.python.org/pypi/ldap-filter/
+    :alt: License
+
+.. image:: https://img.shields.io/travis/SteveEwell/python-ldap-filter/master.svg
+    :target: https://travis-ci.org/SteveEwell/python-ldap-filter
+    :alt: TRAVIS-CI build status for master branch
+
+.. image:: https://img.shields.io/coveralls/github/SteveEwell/python-ldap-filter/master.svg
+    :target: https://coveralls.io/github/SteveEwell/python-ldap-filter
+    :alt: Coveralls code coverage for master branch
+
+
 A Python utility library for working with Lightweight Directory Access
 Protocol (LDAP) filters.
 
