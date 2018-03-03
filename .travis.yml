@@ -9,22 +9,21 @@ matrix:
     - python: 3.4
       env:
         - TOXENV=py34
-        - WITH_GCOV=1
     - python: 3.5
       env:
         - TOXENV=py35
-        - WITH_GCOV=1
     - python: 3.6
       env:
         - TOXENV=py36
-        - WITH_GCOV=1
 
 install:
   - pip install "pip>=7.1.0"
-  - pip install tox-travis pytest pytest-cov
+  - pip install tox-travis
 
-script: tox
+script:
+  - tox
+  - coverage run --source ldap_filter -m py.test
+  - coverage report -m
 
 after_success:
-  - python -m coverage combine
-  - python -m coverage report --show-missing
+  - coveralls
