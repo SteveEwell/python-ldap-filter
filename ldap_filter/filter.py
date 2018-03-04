@@ -19,14 +19,14 @@ class LDAPBase:
 
         return self
 
-    def to_string(self, indent, level, id_char):
+    def to_string(self, indent, indt_char, level):
         raise NotImplementedError
 
     def match(self, data):
         raise NotImplementedError
 
     @staticmethod
-    def _indent(indent, level=0, indt_char=' '):
+    def _indent(indent, indt_char=' ', level=0):
         if type(indent) == bool and indent:
             indent = LDAPBase.indent
         else:
@@ -37,7 +37,6 @@ class LDAPBase:
 
         try:
             indt_char = str(indt_char)
-            print(indt_char)
         except ValueError:
             raise InvalidIndentChar('Indent value must convertible to a string')
 
@@ -125,7 +124,7 @@ class Filter(LDAPBase):
         self.val = val
 
     def __repr__(self):
-        return 'Filter: %s' % self.to_string()
+        return self.to_string()
 
     def __str__(self):
         return self.to_string()
@@ -158,9 +157,9 @@ class Filter(LDAPBase):
         else:
             pass
 
-    def to_string(self, indent=False, level=0, indt_char=' '):
+    def to_string(self, indent=False, indt_char=' ', level=0):
         return ''.join([
-            self._indent(indent, level, indt_char),
+            self._indent(indent, indt_char, level),
             '(',
             self.attr,
             self.comp,
@@ -180,7 +179,7 @@ class Group(LDAPBase):
         self.filters = filters
 
     def __repr__(self):
-        return 'Filter: %s' % self.to_string()
+        return self.to_string()
 
     def __str__(self):
         return self.to_string()
@@ -194,8 +193,8 @@ class Group(LDAPBase):
     def match(self, data):
         raise NotImplementedError
 
-    def to_string(self, indent=False, level=0, indt_char=' '):
-        id_str = self._indent(indent, level, indt_char)
+    def to_string(self, indent=False, indt_char=' ', level=0):
+        id_str = self._indent(indent, indt_char, level)
         id_str2 = id_str
         nl = ''
 
@@ -216,7 +215,7 @@ class Group(LDAPBase):
             '(',
             self.comp,
             nl,
-            nl.join(list(map(lambda x: x.to_string(indent, level + 1, indt_char), self.filters))),
+            nl.join(list(map(lambda x: x.to_string(indent, indt_char, level + 1), self.filters))),
             nl,
             id_str2,
             ')'
@@ -373,10 +372,6 @@ def _not_helper(filt, data):
         return filt.match(data)
     except AttributeError:
         pass
-
-
-def _g_to_string_helper(item, indent, level, indt_char):
-    return item.to_string(indent, level, indt_char)
 
 
 def _to_string(val):
