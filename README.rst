@@ -11,7 +11,7 @@ This project is a Python port of the
 project. The filters produced by the library are based on `RFC
 4515 <https://tools.ietf.org/html/rfc4515>`__.
 
-**Note:** This project is currently only compatible with Python 3.4 and
+**Note:** This project is currently only compatible with Python 3.4 or
 higher.
 
 Usage
@@ -130,15 +130,17 @@ nest as many logical methods as needed to produce complex filters.
 Methods:
 ^^^^^^^^
 
--  **Filter.AND(filt)** - Accepts a list of ``Filter`` objects.
+-  **Filter.AND(filt)** - Accepts a list of ``Filter``, ``Attribute``,
+   or ``Group`` objects.
 
    -  *Output:* ``(&(filt=1)(filt=2)..)``
 
--  **Filter.OR(filt)** - Accepts a list of ``Filter`` objects.
+-  **Filter.OR(filt)** - Accepts a list of ``Filter``, ``Attribute``, or
+   ``Group`` objects.
 
    -  *Output:* ``(|(filt=1)(filt=2)..)``
 
--  **Filter.NOT(filt)** - Accepts a single ``Filter`` object.
+-  **Filter.NOT(filt)** - Accepts a single ``Attribute`` object.
 
    -  *Output:* ``(!(filt=1))``
 
@@ -155,8 +157,8 @@ determine if a string is a valid LDAP filter or not.
 
     Filter.parse(input)
 
-If an invalid LDAP filter string is passed to ``Filter.parse(input)`` a
-``ParseError`` exception will be thrown.
+If an invalid LDAP filter string is passed a ``ParseError`` exception
+will be thrown.
 
 .. code:: python
 
@@ -243,7 +245,7 @@ You can get the default beautified format by passing ``True`` to the
 
     print(output.to_string(True))
 
-*Beautified Output:*
+*Default Beautified Output:*
 
 ::
 
@@ -274,7 +276,7 @@ parameter accepts any string or character value.
 
     print(output.to_string(2, '.'))
 
-*Beautified Output:*
+*Custom Beautified Output:*
 
 ::
 
@@ -293,7 +295,7 @@ Filter Matching
 The ``Filter.match(data)`` method allows you to evaluate a Python
 dictionary with attributes against an LDAP filter. The method will
 return ``True`` if a match is found or ``False`` if there is no match
-(or if an attribute matches a NOT exclusion).
+(or if an attribute matches a **NOT** exclusion).
 
 .. code:: python
 
