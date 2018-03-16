@@ -34,7 +34,7 @@ rootdir = os.path.dirname(__file__) or "."
 
 setup(
     name='ldap-filter',
-    version='0.2.0',
+    version='0.2.1',
     description='A Python utility library for working with Lightweight Directory Access Protocol (LDAP) filters.',
     long_description=__doc__,
     url='https://github.com/SteveEwell/python-ldap-filter',
