@@ -23,7 +23,7 @@ matrix:
         - TOXENV=py38
 
 install:
-  - pip install "pip>=7.1.0"
+  - pip install "pip>=7.1.0" six
   - python setup.py install_egg_info
   - pip install tox-travis coverage coveralls pytest tox
 
