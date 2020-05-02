@@ -2,7 +2,7 @@ language: python
 
 sudo: false
 
-#cache: pip
+cache: pip
 
 matrix:
   include:
@@ -23,7 +23,7 @@ matrix:
         - TOXENV=py38
 
 install:
-  - pip install "pip>=7.1.0" six
+  - pip install "pip>=7.1.0" "six<2,>=1.14.0"
   - python setup.py install_egg_info
   - pip install tox-travis coverage coveralls pytest tox
 
