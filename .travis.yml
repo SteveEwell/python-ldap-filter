@@ -15,10 +15,15 @@ matrix:
     - python: 3.6
       env:
         - TOXENV=py36
+    - python: 3.7
+      env:
+        - TOXENV=py37
+    - python: 3.8
+      env:
+        - TOXENV=py38
 
 install:
-  - pip install "pip>=7.1.0"
-  - pip install tox-travis coverage coveralls pytest tox
+  - pip install tox-travis coverage coveralls pytest tox --upgrade
 
 script:
   - tox
