@@ -147,7 +147,7 @@ class Grammar(object):
     REGEX_3 = re.compile('^[\\x20]')
     REGEX_4 = re.compile('^[\\x09]')
     REGEX_5 = re.compile('^[0-9]')
-    REGEX_6 = re.compile('^[a-zA-Z]')
+    REGEX_6 = re.compile('^[a-zA-Z:.]')
 
     def _read_root(self):
         address0, index0 = FAILURE, self._offset
