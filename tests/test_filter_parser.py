@@ -15,6 +15,15 @@ class TestFilterParser:
         string = parsed.to_string()
         assert string == filt
 
+    def test_negative_group_filter(self):
+        filt = "(!(|(cn=admins)))"
+        parsed = Filter.parse(filt)
+        assert parsed is not None
+        filt = '(&(!(|(sn=ron)(sn=bob)))(mail=*)(|(cn=john)(cn=alex)(cn=rob)))'
+        parsed = Filter.parse(filt)
+        string = parsed.to_string()
+        assert string == filt
+
     def test_allows_whitespace(self):
         filt = ' (&  (sn=smith with spaces)(one-two<=morespaces) (objectType=object Type) \n )  '
         parsed = Filter.parse(filt)
