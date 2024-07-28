@@ -1,4 +1,4 @@
-# Python LDAP Filter &middot; [![Latest Version](https://img.shields.io/pypi/v/ldap-filter.svg)](https://pypi.python.org/pypi/ldap-filter) [![License](https://img.shields.io/pypi/l/ldap-filter.svg)](https://pypi.python.org/pypi/ldap-filter) [![TRAVIS-CI build status for master branch](https://img.shields.io/travis/SteveEwell/python-ldap-filter/master.svg)](https://travis-ci.org/SteveEwell/python-ldap-filter) [![Coveralls code coverage for master branch](https://img.shields.io/coveralls/github/SteveEwell/python-ldap-filter/master.svg)](https://coveralls.io/github/SteveEwell/python-ldap-filter)
+# Python LDAP Filter &middot; [![Latest Version](https://img.shields.io/pypi/v/ldap-filter.svg)](https://pypi.python.org/pypi/ldap-filter) [![License](https://img.shields.io/pypi/l/ldap-filter.svg)](https://pypi.python.org/pypi/ldap-filter)
 
 > Build, generate, and validate LDAP filters
 
@@ -285,4 +285,4 @@ Project home page is https://github.com/SteveEwell/python-ldap-filter
 
 # License
 
-The **Python LDAP Filter** project is open source software released under the [MIT licence](https://en.wikipedia.org/wiki/MIT_License). Copyright 2018 Stephen Ewell
+The **Python LDAP Filter** project is open source software released under the [MIT licence](https://en.wikipedia.org/wiki/MIT_License). Copyright 2024 Stephen Ewell

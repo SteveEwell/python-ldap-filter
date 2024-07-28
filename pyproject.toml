@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ldap-filter"
+version = "1.0.0"
+description = "A Python utility library for working with Lightweight Directory Access Protocol (LDAP) filters."
+readme = "README.md"
+authors = [{ name = "Stephen Ewell", email = "steve@ewell.io" }]
+license = { file = "LICENSE.txt" }
+classifiers = [
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.4",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+keywords = ["ldap", "filter", "rfc4515", "utility", "development"]
+requires-python = ">=3.4"
+
+[project.optional-dependencies]
+test = ["pytest", "coverage"]
+
+[project.urls]
+Homepage = "https://github.com/SteveEwell/python-ldap-filter"
