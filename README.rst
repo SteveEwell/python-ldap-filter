@@ -1,4 +1,4 @@
-Python LDAP Filter · |Latest Version| |License| |TRAVIS-CI build status for master branch| |Coveralls code coverage for master branch|
+Python LDAP Filter · |Latest Version| |License|
 ======================================================================================================================================
 
     Build, generate, and validate LDAP filters
