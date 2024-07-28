@@ -484,7 +484,7 @@ class ParserActions:
     @staticmethod
     def return_not_filter(input, start, end, filt=None, elements=None):
         for f in filt:
-            if isinstance(f, Filter):
+            if isinstance(f, (Filter, GroupAnd, GroupOr, GroupNot)):
                 return Filter.NOT(f)
 
 
