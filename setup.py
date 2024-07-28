@@ -32,38 +32,4 @@ if os.path.isfile("MANIFEST"):
 rootdir = os.path.dirname(__file__) or "."
 
 
-setup(
-    name='ldap-filter',
-    version='1.0.0',
-    description='A Python utility library for working with Lightweight Directory Access Protocol (LDAP) filters.',
-    long_description=__doc__,
-    url='https://github.com/SteveEwell/python-ldap-filter',
-    author='Stephen Ewell',
-    author_email='steve@ewell.io',
-    license='MIT',
-    classifiers=[
-        'Intended Audience :: Developers',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
-        'Programming Language :: Python :: 3.11',
-        'Programming Language :: Python :: 3.12',
-    ],
-    keywords='ldap filter rfc4515 utility development',
-    packages=['ldap_filter'],
-    install_requires=[],
-    extras_require={
-        'test': [
-            'pytest>=3.0.2',
-            'coverage>=4.2'
-        ],
-    },
-    python_requires='!=2.*,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*'
-)
+setup()
