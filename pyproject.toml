@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ldap-filter"
-version = "1.0.0"
+version = "1.0.1"
 description = "A Python utility library for working with Lightweight Directory Access Protocol (LDAP) filters."
 readme = "README.md"
 authors = [{ name = "Stephen Ewell", email = "steve@ewell.io" }]
