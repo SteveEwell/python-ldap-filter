@@ -29,7 +29,7 @@ grammar LDAP
     LDAP_OID <- (DIGIT+ ("." DIGIT+)*) %return_oid_type
     options <- (option ";" options) %return_string / option
     option <- (AttrTypeChars+) %return_string
-    AttributeValue <- EscapedCharacter / [^!*\x29]
+    AttributeValue <- EscapedCharacter / [^\x29]
     EscapedCharacter <- '\\' ASCII_VALUE %return_escaped_char
     ASCII_VALUE <- HEX_CHAR HEX_CHAR %return_hex
     HEX_CHAR <- [a-fA-F0-9]

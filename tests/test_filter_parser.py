@@ -30,6 +30,14 @@ class TestFilterParser:
         string = parsed.to_string()
         assert string == '(&(sn=smith with spaces)(one-two<=morespaces)(objectType=object Type))'
 
+    def test_allows_value_with_exclamation(self):
+        filt = '(&(name=Test!)(mail=*@example.com)(|(dept=accounting)(dept=operations)))'
+        parsed = Filter.parse(filt)
+        test = {'name': 'Test!', 'mail': 'ron@example.com', 'dept': 'operations'}
+        assert parsed.match(test)
+        test_fail = {'name': 'Test', 'mail': 'ron@example.com', 'dept': 'operations'}
+        assert not parsed.match(test_fail)
+
     def test_allowed_characters(self):
         filt = '(orgUnit=%)'
         parsed = Filter.parse(filt)
